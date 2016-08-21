@@ -34,13 +34,16 @@ def main(argv):
             rows.append({"date": fields[0],
                          "topic": course[fields[1]]["topic"],
                          "materials": course[fields[1]]["materials"],
-                         "reminders": fields[2] if len(fields) > 2 else ""
+                         "reminders": (fields[2].split(",") if len(fields) > 2
+                                       else [""])
                          })
         else:
             rows.append({"date": fields[0],
                          "topic": fields[1] if len(fields) > 1 else "",
-                         "materials": fields[2] if len(fields) > 2 else "",
-                         "reminders": fields[3] if len(fields) > 3 else ""
+                         "materials": (fields[2].split(",") if len(fields) > 2
+                                       else [""]),
+                         "reminders": (fields[3].split(",") if len(fields) > 2
+                                       else [""])
                          })
     env = jinja2.Environment()
     env.filters['markdown'] = markdown.markdown

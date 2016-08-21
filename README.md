@@ -117,7 +117,27 @@ Week 16
 2016-12-05
 ```
 
-At this point you can tweak this file to move lessons, add reminders, and add your class's final exam. Reminders go in the third field in the schedule file. Fields on lines that represent class days are delimited by semicolons. Lines with no semicolons are "internal headers", that is, rows with one cell that spans four columns. I use [Bootstrap](http://getbootstrap.com/) to style my class web sites and [Jekyll](https://jekyllrb.com/) to generate the web sites from Markdown and HTML sources, so I have appropriate Bootstrap CSS and Jekyll headers in my HTML templates.
+At this point you can tweak this file to move lessons, add reminders, and add your class's final exam. Reminders go in the third field in the schedule file. Fields on lines that represent class days are delimited by semicolons. Lines with no semicolons are "internal headers", that is, rows with one cell that spans four columns.
+
+To add a reminder to a class day that has a lesson in the course file, add a third field with a semicolon. For example, to add a link to a homework on Day one, change that line to:
+
+```sh
+2016-08-22;intro-cs2316;[HW 0 Assigned](fall2016/hw0/hw0.html)
+```
+
+Notice that Markdown is accepted here as well. You can add multiple reminders by separating them with commas. For example, to add an additional reminder to Day 1:
+
+```sh
+2016-08-22;intro-cs2316;[HW 0 Assigned](fall2016/hw0/hw0.html),Install Python today!
+```
+
+Class days that don't have a lecture in the course file can be entered manually. For example,
+
+```sh
+2016-11-28;Matplotlib;[Matplotlib](http://matplotlib.org/),More materials;A reminder
+```
+
+All fields are optional except the first field.
 
 I typically generate a schedule file at the beginning of the semester, then add the schedule file to the repository for my course materials and edit it by hand to make adjustments during the semester (see `render_schedule.py` below).
 
@@ -153,6 +173,9 @@ $ render_schedule.py -s sample-course.fall2016 -c sample-course.json -t sample-t
 ```
 
 Now you have an HTML class schedule that you can publish on the web. Every time you want to chagne the course -- like adjusting for snow days, etc -- just edit the schedule file and re-run `render_schedule.py`. Much easier than messing with HTML code directly.
+
+I use [Bootstrap](http://getbootstrap.com/) to style my class web sites and [Jekyll](https://jekyllrb.com/) to generate the web sites from Markdown and HTML sources, so I have appropriate Bootstrap CSS and Jekyll headers in my HTML templates.
+
 
 ## The Course JSON File
 

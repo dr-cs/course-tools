@@ -13,15 +13,22 @@
       {% else %}
       <tr>
         <td>{{row["date"]}}</td>
-        <td>{{row["topic"]|markdown}}</td>
+        <td>{{(row["topic"]|markdown).replace("<p>","").replace("</p>","")}}</td>
         <td>
-          {% for item in row["materials"] %}
-          {{item|markdown}}
+          {% for item in row["materials"][:-1] %}
+          {{(item|markdown).replace("<p>","").replace("</p>","")}}<br/>
           {% endfor %}
+          {{(row["materials"][-1]|markdown).replace("<p>","").replace("</p>","")}}
         </td>
-        <td>{{row["reminders"]}}</td>
+        <td>
+          {% for item in row["reminders"][:-1] %}
+          {{(item|markdown).replace("<p>","").replace("</p>","")}}<br/>
+          {% endfor %}
+          {{(row["reminders"][-1]|markdown).replace("<p>","").replace("</p>","")}}
+        </td>
       </tr>
       {% endif %}
       {% endfor %}
+    </table>
   </body>
 </html>
