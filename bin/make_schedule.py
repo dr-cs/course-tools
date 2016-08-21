@@ -22,7 +22,7 @@ def make_argparser():
     parser.add_argument("-l", "--last", dest="last", required=True,
                         help="The last class date, in ISO format")
     parser.add_argument("-d", "--days", dest="days", required=True,
-                        help="The last class date, in ISO format")
+                        help="Class days, e.g., TR for Tuesdays and Thursdays")
     parser.add_argument("-b", "--breaks", dest="breaks", required=False,
                         help="File containing JSON dict of breaks/holidays.")
     parser.add_argument("-c", "--course", dest="course", required=False,

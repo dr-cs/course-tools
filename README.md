@@ -31,14 +31,13 @@ optional arguments:
   -f FIRST, --first FIRST
                         The first class date, in ISO format
   -l LAST, --last LAST  The last class date, in ISO format
-  -d DAYS, --days DAYS  The last class date, in ISO format
+  -d DAYS, --days DAYS  Class days, e.g., TR for Tuesdays and Thursdays
   -b BREAKS, --breaks BREAKS
                         File containing JSON dict of breaks/holidays.
   -c COURSE, --course COURSE
                         JSON course. If absent, generate blank schedule.
   -o OUTPUT, --output OUTPUT
                         File to write schedule to.
-
 ```
 
 #### Example
@@ -151,3 +150,7 @@ $ render_schedule.py -s sample-course.fall2016 -c sample-course.json -t sample-t
 ```
 
 Now you have an HTML class schedule that you can publish on the web. Every time you want to chagne the course -- like adjusting for snow days, etc -- just edit the schedule file and re-run `render_schedule.py`. Much easier than messing with HTML code directly.
+
+## TODO
+
+Add capability to automatically add reminders for special days like withdrawal deadlines and progress reports using a JSON file similar to the one for breaks and holidays.
