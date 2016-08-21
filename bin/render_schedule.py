@@ -1,71 +1,52 @@
 #!/usr/bin/env python3
 
-import sys, json, itertools, textwrap
+import argparse
+import sys
+import json
+import jinja2
+import pprint as pp
+import markdown
 
-def make_internal_header(fields):
-    internal_header = """
-      <tr class="active">
-        <td colspan="4" class="active">{}</td>
-      </tr>""".format(fields[0])
-    return textwrap.dedent(internal_header)
-
-def make_schedule_row(fields, lessons):
-    date = fields[0]
-    topics = ""
-    readings = ""
-    if fields[1] in lessons:
-        lesson = lessons[fields[1]]
-        topics += lesson["topic"]
-        for reading in lesson["readings"]:
-            readings += reading + "<br/>"
-        for resource in lesson["resources"]:
-            readings += resource + "<br/>"
-    else:
-        topics += fields[1]
-    reminders = fields[2] if len(fields) == 3 else ""
-    schedule_row = """
-      <tr>
-        <td>{}</td>
-        <td>{}</td>
-        <td>{}</td>
-        <td>{}</td>
-      </tr>""".format(date, topics, readings, reminders)
-    return textwrap.dedent(schedule_row)
+def make_argparser():
+    parser = argparse.ArgumentParser(description='Generate class schedule.')
+    parser.add_argument("-s", "--schedule", dest="schedule", required=True,
+                        help="Schedule file, as produced by make_schedule.py")
+    parser.add_argument("-c", "--course", dest="course", required=True,
+                        help="JSON file containing course dict.")
+    parser.add_argument("-t", "--template", dest="template_file", required=True,
+                        help="Template file used for rendering schedule.")
+    parser.add_argument("-o", "--output", dest="output", required=False,
+                        help="Name of file to write rendered schedule to.")
+    return parser
 
 
-def make_schedule_table(lines, lessons):
-    table = """
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover">
-        <tr class="table-header active">
-          <th>Date</th>
-          <th>Topics</th>
-          <th>Reading and Resources</th>
-          <th>Reminders</th>
-        </tr>"""
-    for line in lines:
-        fields = [f.strip(" ") for f in line.split(";")]
+def main(argv):
+    parser = make_argparser()
+    args = parser.parse_args(argv[1:])
+    schedule_file = open(args.schedule, 'r')
+    course = json.load(open(args.course, 'r'))
+    rows = []
+    for line in schedule_file:
+        fields = [field.strip() for field in line.split(";")]
         if len(fields) == 1:
-            table += make_internal_header(fields)
+            rows.append({"internal_header": fields[0]})
+        elif fields[1] in course:
+            rows.append({"date": fields[0],
+                         "topic": course[fields[1]]["topic"],
+                         "materials": course[fields[1]]["materials"],
+                         "reminders": fields[2] if len(fields) > 2 else ""
+                         })
         else:
-            table += make_schedule_row(fields, lessons)
-
-    table += """
-      </table>
-    </div>"""
-    return textwrap.dedent(table)
-
+            rows.append({"date": fields[0],
+                         "topic": fields[1] if len(fields) > 1 else "",
+                         "materials": fields[2] if len(fields) > 2 else "",
+                         "reminders": fields[3] if len(fields) > 3 else ""
+                         })
+    env = jinja2.Environment()
+    env.filters['markdown'] = markdown.markdown
+    template = env.from_string(open(args.template_file, 'r').read())
+    fout = open(args.output, 'w') if args.output else sys.stdout
+    print(template.render(table=rows), file=fout)
 
 if __name__=="__main__":
-    schedule_spec = sys.argv[1]
-    course, semester = schedule_spec.split(".")
-    lessons = json.load(open("{}.json".format(course), "r"))
-    fin = open(schedule_spec, "r")
-    out = ""
-    lines = [line.strip("\n") for line in fin.readlines()]
-    header_divide = lines.index("BEGIN_SCHEDULE")
-    for header in lines[:header_divide]:
-        out += header + "\n"
-    out += make_schedule_table(lines[header_divide + 1:], lessons)
-    fout = open(semester +".html", "w")
-    fout.write(out)
+    main(sys.argv)

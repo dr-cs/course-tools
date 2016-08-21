@@ -1,0 +1,195 @@
+{
+    "intro-cs2316": {
+        "topic": "[Intro to CS 2316](slides/intro-cs2316.pdf)",
+        "materials": [""],
+        "order": [1]
+    },
+    "intro-python": {
+        "topic": "[Intro to Python](slides/python-overview.pdf)",
+        "materials": ["[ITCS - Introduction](http://interactivepython.org/runestone/static/thinkcspy/GeneralIntro/introduction.html)",
+                     "IP 1"],
+        "order": [2]
+    },
+    "values-variables": {
+        "topic": "[Values and Variables](slides/values-variables.pdf)",
+        "materials": ["[ITCS - Simple Data](http://interactivepython.org/runestone/static/thinkcspy/SimplePythonData/simpledata.html)", "IP 2"],
+        "order": [3,4]
+    },
+    "data-structures": {
+        "topic": "[Data Structures](slides/data-structures.pdf)",
+        "materials": ["[ITCS - Lists](http://interactivepython.org/runestone/static/thinkcspy/Lists/lists.html)", "[ITCS - Dictionaries](http://interactivepython.org/runestone/static/thinkcspy/Dictionaries/dictionaries.html)", "IP 2-3"],
+        "order": [5,6]
+    },
+    "strings": {
+        "topic": "[Strings](slides/strings.html)",
+        "materials": ["[ITCS - Simple Data](http://interactivepython.org/runestone/static/thinkcspy/SimplePythonData/simpledata.html)", "IP 2"],
+        "order": [7]
+    },
+    "functions": {
+        "topic": "[Functions](slides/functions.pdf)",
+        "materials": ["[ITCS - Functions](http://interactivepython.org/runestone/static/thinkcspy/Functions/functions.html)", "[ITCS - Turtles](http://interactivepython.org/runestone/static/thinkcspy/PythonTurtle/helloturtle.html)", "IP 4"],
+        "order": [8]
+    },
+    "control-structures": {
+        "topic": "[Control Structures](slides/control-structures.pdf)",
+        "materials": ["[ITCS - Selection](http://interactivepython.org/runestone/static/thinkcspy/Selection/selection.html)",
+                     "[ITCS - Iteration](http://interactivepython.org/runestone/static/thinkcspy/MoreAboutIteration/moreiteration.html)", "IP 4"],
+        "order": [9,10]
+    },
+    "modules-programs": {
+        "topic": "[Modules and Programs](slides/modules-programs.pdf)",
+        "materials": ["[ITCS - Modules](http://interactivepython.org/runestone/static/thinkcspy/PythonModules/modules.html)", "IP 6", "[hanglib](code/hanglib/)"],
+        "order": [11]
+    },
+    "data-representation": {
+        "topic": "[Data Representation](slides/data-representation.pdf)",
+        "materials": [""],
+        "order": [100]
+    },
+    "functools": {
+        "topic": "[Functional Tools](slides/functools.html)",
+        "materials": [""],
+        "order": [12]
+    },
+    "classes-objects": {
+        "topic": "[Classes and Objects](slides/classes-objects.html)",
+        "materials": ["[ITCS - Classes and Objects](http://interactivepython.org/runestone/static/thinkcspy/Classes/classesintro.html)", "[OOP Code](code/oop/)"],
+        "order": [13,14]
+    },
+    "review1": {
+        "topic": "Review 1",
+        "materials": [""],
+        "order": [15]
+    },
+    "exam1": {
+        "topic": "Exam 1",
+        "materials": [""],
+        "order": [16]
+    },
+    "pq1": {
+        "topic": "Programming Quiz 1",
+        "materials": [""],
+        "order": [17]
+    },
+    "csv-files": {
+        "topic": "[CSV Files](slides/csv-files.pdf)",
+        "materials": ["IP 8", "[Data Files](code/structured-files/)"],
+        "order": [18]
+    },
+    "xml": {
+        "topic": "[XML](slides/xml.pdf)",
+        "materials": ["IP 8"],
+        "order": [18]
+    },
+    "json": {
+        "topic": "[JavaScript Object Notation](slides/json.html)",
+        "materials": ["IP 8", "[JSON Spec](http://json.org/)"],
+        "order": [19]
+    },
+    "relational-databases": {
+        "topic": "[Relational Databases](slides/relational-databases.pdf)",
+        "materials": [""],
+        "order": [20]
+    },
+    "database-normalization": {
+        "topic": "[Database Normalization](slides/db-normalization.pdf)",
+        "materials": [""],
+        "order": [100]
+    },
+    "sql": {
+        "topic": "[SQL](slides/sql.pdf)",
+        "materials": [""],
+        "order": [21]
+    },
+    "python-xml-databases": {
+        "topic": "[Python XML and Database APIs](slides/python-xml-database.pdf)",
+        "materials": [""],
+        "order": [22]
+    },
+    "review2": {
+        "topic": "Review 2",
+        "materials": [""],
+        "order": [23]
+    },
+    "exam2": {
+        "topic": "Exam 2",
+        "materials": [""],
+        "order": [24]
+    },
+    "pq2": {
+        "topic": "Programming Quiz 1",
+        "materials": [""],
+        "order": [25]
+    },
+    "html": {
+        "topic": "[HTML](slides/html.pdf)",
+        "materials": ["IP 8", "<a href=\"\"></a>"],
+        "order": [26]
+    },
+    "flask": {
+        "topic": "[Flask](slides/flask.pdf)",
+        "materials": ["IP 9", "[Flask Web site](http://flask.pocoo.org/)",
+                      "[Gradeboook App](code/web/gradebook.zip)"],
+        "order": [27,28]
+    },
+    "regular-expressions": {
+        "topic": "[Text Processing](slides/text-processing.pdf)",
+        "materials": ["IP 7", "[Python RE Module](https://docs.python.org/3/library/re.html)", "[Python Regex HowTo](https://docs.python.org/3/howto/regex.html)"],
+        "order": [29]
+    },
+    "web-mining": {
+        "topic": "[Web Mining](slides/web-mining.html)",
+        "materials": ["[Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)", "[Requests](http://docs.python-requests.org/en/master/)", "[wx.py](code/web/wx.py)"],
+        "order": [30, 31]
+    },
+    "python-guis": {
+        "topic": "[Python GUIs](slides/pyqt-guis.html)",
+        "materials": ["[GUI Example Code](code/gui/)"],
+        "order": [32, 33, 34]
+    },
+    "review3": {
+        "topic": "Review 3",
+        "materials": [""],
+        "order": [35]
+    },
+    "exam3": {
+        "topic": "Exam 1",
+        "materials": [""],
+        "order": [36]
+    },
+    "pq3": {
+        "topic": "Programming Quiz 1",
+        "materials": [""],
+        "order": [37]
+    },
+    "data-analysis": {
+        "topic": "Data Analysis",
+        "materials": [""],
+        "order": []
+    },
+    "ipython": {
+        "topic": "IPython",
+        "materials": [""],
+        "order": []
+    },
+    "numpy": {
+        "topic": "NumPy",
+        "materials": [""],
+        "order": []
+    },
+    "pandas": {
+        "topic": "Pandas",
+        "materials": [""],
+        "order": []
+    },
+    "matplotlib": {
+        "topic": "MatPlotLib",
+        "materials": [""],
+        "order": []
+    },
+    "review4": {
+        "topic": "Review 4",
+        "materials": [""],
+        "order": []
+    }
+}

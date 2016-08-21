@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <title></title>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <th>Date</th><th>Topics</th><th>Reading/Resources</th><th>Reminders</th>
+      </tr>
+      {% for row in table %}
+      {% if "internal_header" in row %}
+      <tr><td colspan="4">{{row["internal_header"]}}</td></tr>
+      {% else %}
+      <tr>
+        <td>{{row["date"]}}</td>
+        <td>{{row["topic"]|markdown}}</td>
+        <td>
+          {% for item in row["materials"] %}
+          {{item|markdown}}
+          {% endfor %}
+        </td>
+        <td>{{row["reminders"]}}</td>
+      </tr>
+      {% endif %}
+      {% endfor %}
+  </body>
+</html>
