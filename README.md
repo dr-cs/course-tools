@@ -201,6 +201,16 @@ Given the example above, in a schedule built with `make_schedule.py` including t
 
 The string values are processed by a Markdown translator in `render_schedule.py`, so `[text](link)` becomes `<a href="link">text</a>`, `**text**` becomes `<b>text</b>`, and so on.
 
+## Testing and Debugging
+
+Watch out for missing commas between dicts and list elements, and spurious comma after the last element in course files. Remember that JSON uses only "double quotes" in string literals, not 'single quotes'.
+
+No unit tests, but you can run all the docstring tests with
+
+```sh
+python -m doctest -v make_schedule.py
+```
+
 ## TODO
 
 Add capability to automatically add reminders for special days like withdrawal deadlines and progress reports using a JSON file similar to the one for breaks and holidays.

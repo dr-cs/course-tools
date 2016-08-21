@@ -6,12 +6,20 @@ import sys
 import datetime as dt
 
 def class_dates(first, last, class_days):
+    """Generate dates from first to last whose weekdays are in class_days
+
+    >>> import datetime
+    >>> begin = datetime.date(2016, 8, 22)
+    >>> end = datetime.date(2016, 8, 25)
+    >>> list(class_dates(begin, end, "TR"))
+    [datetime.date(2016, 8, 23), datetime.date(2016, 8, 25)]
+    """
     day = first
     # e.g., "MWF" => [0, 2, 4]
-    class_day_indices = [i for i, letter in enumerate("MTWRFSU")
+    class_day_ints = [i for i, letter in enumerate("MTWRFSU")
                            if letter in class_days]
     while day <= last:
-        if day.weekday() in class_day_indices:
+        if day.weekday() in class_day_ints:
             yield day
         day += dt.timedelta(days=1)
 
