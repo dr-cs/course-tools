@@ -6,12 +6,13 @@ A set of scripts that I use to automate course management tasks with examples to
 
 - [Python3](https://www.python.org/)
 - [Jinja2](http://jinja.pocoo.org/)
+- [Python-Markdown](https://pythonhosted.org/Markdown/)
 
-I strongly recommend installing [Miniconda](http://conda.pydata.org/miniconda.html) and using the `conda` package manager to manage your Python versions and libraries.
+I strongly recommend installing [Miniconda](http://conda.pydata.org/miniconda.html) and using the `conda` package manager to manage your Pythons and Python libraries. All of the above are available from conda.
 
 ## Installation
 
-Clone this repository and add the `bin` directory to your path.
+Clone this repository on your computer (or fork it and and clone your fork), and add the `bin` directory to your path.
 
 ## Utility Scripts
 
@@ -118,6 +119,8 @@ Week 16
 
 At this point you can tweak this file to move lessons, add reminders, and add your class's final exam. Reminders go in the third field in the schedule file. Fields on lines that represent class days are delimited by semicolons. Lines with no semicolons are "internal headers", that is, rows with one cell that spans four columns. I use [Bootstrap](http://getbootstrap.com/) to style my class web sites and [Jekyll](https://jekyllrb.com/) to generate the web sites from Markdown and HTML sources, so I have appropriate Bootstrap CSS and Jekyll headers in my HTML templates.
 
+I typically generate a schedule file at the beginning of the semester, then add the schedule file to the repository for my course materials and edit it by hand to make adjustments during the semester (see `render_schedule.py` below).
+
 ### `render_schedule.py`
 
 #### Usage
@@ -150,6 +153,53 @@ $ render_schedule.py -s sample-course.fall2016 -c sample-course.json -t sample-t
 ```
 
 Now you have an HTML class schedule that you can publish on the web. Every time you want to chagne the course -- like adjusting for snow days, etc -- just edit the schedule file and re-run `render_schedule.py`. Much easier than messing with HTML code directly.
+
+## The Course JSON File
+
+The course JSON file is a dictionary of dictionaries. Each key in the top-level dictionary is an identifier for a lesson which maps to a dictionary that contains the topic, materials, and optionally the order for that lesson. Where a lesson identifier appears in the second field of a course schedule, the `make_schedule.py` script uses the dictionary associated with that lesson key to generate the Topic and Materials cells of the table row for that lesson.
+
+For each lesson dictionary,
+
+- the value associated with `topic` should be a single Markdown-formatted string,
+- the value associated with 'materials` should be a list of Markdown-formatted strings, and
+- the value associated with the optional `order` key should be a list of integers.
+
+Hypothetical Example:
+
+```JSON
+{
+    "intro-cs2316": {
+        "topic": "[Intro to CS 2316](slides/intro-cs2316.pdf)",
+        "materials": ["[Syllabus](syllabus.html)", "[Schedule](schedule.html)"],
+        "order": [1]
+    },
+    "intro-python": {
+        "topic": "[Intro to Python](slides/intro-python.html)",
+        "materials": ["[TP](http://greenteapress.com/wp/think-python-2e/)",
+                     "Introducting Python, Ch 1"],
+        "order": [2]
+    },
+    "values-variables": {
+        "topic": "[Values and Variables](slides/values-variables.html)",
+        "materials": ["[TP](http://greenteapress.com/wp/think-python-2e/)",
+                     "Introducing Python, Ch 2"],
+        "order": [3,4]
+    },
+    "python-monads": {
+        "topic": "[Monads in Python](slides/python-monads.html)",
+        "materials": ["Probably", "not", "gonna", "cover", "this"],
+        "order": [100]
+    }
+}
+```
+
+Given the example above, in a schedule built with `make_schedule.py` including the `-c/--course` option
+
+- `intro-cs2316` is on the first day of class,
+- `values-variables` is on the 3rd and 4th days of class,
+- `python-monads` will not appear in any schedule with fewer than 100 days of classes. This is a way to "hide" a lesson from `make_schedule.py` while keeping it in the course file.
+
+The string values are processed by a Markdown translator in `render_schedule.py`, so `[text](link)` becomes `<a href="link">text</a>`, `**text**` becomes `<b>text</b>`, and so on.
 
 ## TODO
 
