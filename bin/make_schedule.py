@@ -39,6 +39,20 @@ def make_argparser():
                         help="File to write schedule to.")
     return parser
 
+
+def make_order2lesson(course):
+    if not course:
+        return None
+    # make a dict mapping lesson order to lesson key in course
+    order2lesson = {}
+    for lesson in course.keys():
+        if "order" in course[lesson]:
+            # lesson is a list of ints - map each one to lesson
+            # represents lessons that span multiple class days
+            for i in course[lesson]["order"]:
+                order2lesson[i] = lesson
+    return order2lesson
+
 def main(argv):
     parser = make_argparser()
     args = parser.parse_args(argv[1:])
@@ -46,21 +60,14 @@ def main(argv):
     last = dt.datetime.strptime(args.last, "%Y-%m-%d").date()
     breaks = json.load(open(args.breaks, 'r')) if args.breaks else None
     course = json.load(open(args.course, 'r')) if args.course else None
-    if course:
-        # make a dict mapping lesson order to lesson key in course
-        order2lesson = {}
-        for lesson in course.keys():
-            if "order" in course[lesson]:
-                # lesson is a list of ints - map each one to lesson
-                # represents lessons that span multiple class days
-                for i in course[lesson]["order"]:
-                    order2lesson[i] = lesson
+    order2lesson = make_order2lesson(course)
     fout = open(args.output, 'w') if args.output else sys.stdout
-    week = 1
     lesson_number = 1
     last_class = first
+    print("Week 1", file=fout)
+    week = 2
     for class_date in class_dates(first, last, args.days):
-        if class_date.weekday() <= last_class.weekday():
+        if class_date.weekday() < last_class.weekday():
             print("Week {}".format(week), file=fout)
             week += 1
         last_class = class_date
