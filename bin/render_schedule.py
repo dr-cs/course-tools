@@ -42,7 +42,7 @@ def main(argv):
                          "topic": fields[1] if len(fields) > 1 else "",
                          "materials": (fields[2].split(",") if len(fields) > 2
                                        else [""]),
-                         "reminders": (fields[3].split(",") if len(fields) > 2
+                         "reminders": (fields[3].split(",") if len(fields) > 3
                                        else [""])
                          })
     env = jinja2.Environment()
