@@ -4,8 +4,9 @@ import argparse
 import sys
 import json
 import jinja2
-import pprint as pp
+from pprint import pprint
 import markdown
+from functools import reduce
 
 def make_argparser():
     parser = argparse.ArgumentParser(description='Generate class schedule.')
@@ -19,6 +20,19 @@ def make_argparser():
                         help="Name of file to write rendered schedule to.")
     return parser
 
+def topics(topics, course, key="topic"):
+    items = [item.strip() for item in topics.split(",")]
+    return [course[item][key] if (item in course) else item
+            for item in items]
+
+def materials(topics, materials, course):
+    topic_items = [item.strip() for item in topics.split(",")]
+    materials_items = [item.strip() for item in materials.split(",")]
+    lecture_materials = reduce(lambda a, b: a + b,
+                               [course[item]["materials"]
+                                for item in topic_items if item in course],
+                               [])
+    return (lecture_materials + [item for item in materials_items])
 
 def main(argv):
     parser = make_argparser()
@@ -30,19 +44,17 @@ def main(argv):
         fields = [field.strip() for field in line.split(";")]
         if len(fields) == 1:
             rows.append({"internal_header": fields[0]})
-        elif fields[1] in course:
-            rows.append({"date": fields[0],
-                         "topic": course[fields[1]]["topic"],
-                         "materials": course[fields[1]]["materials"],
-                         "reminders": (fields[2].split(",") if len(fields) > 2
-                                       else [""])
-                         })
         else:
             rows.append({"date": fields[0],
-                         "topic": fields[1] if len(fields) > 1 else "",
-                         "materials": (fields[2].split(",") if len(fields) > 2
-                                       else [""]),
-                         "reminders": (fields[3].split(",") if len(fields) > 3
+                         "topics": (topics(fields[1], course)
+                                    if len(fields) > 1
+                                    else [""]),
+                         "materials": (materials(fields[1],
+                                                 fields[2] if len(fields) > 2 else "",
+                                                 course)
+                                       ),
+                         "reminders": (fields[3].split(",")
+                                       if len(fields) > 3
                                        else [""])
                          })
     env = jinja2.Environment()
