@@ -5,7 +5,7 @@ import json
 import sys
 import datetime as dt
 
-def class_dates(first, last, class_days):
+def gen_class_dates(first, last, class_days):
     """Generate dates from first to last whose weekdays are in class_days
 
     >>> import datetime
@@ -33,6 +33,8 @@ def make_argparser():
                         help="Class days, e.g., TR for Tuesdays and Thursdays")
     parser.add_argument("-b", "--breaks", dest="breaks", required=False,
                         help="File containing JSON dict of breaks/holidays.")
+    parser.add_argument("-r", "--reminders", dest="reminders", required=False,
+                        help="File containing JSON dict of reminders.")
     parser.add_argument("-c", "--course", dest="course", required=False,
                         help="JSON course. If absent, generate blank schedule.")
     parser.add_argument("-o", "--output", dest="output", required=False,
@@ -53,12 +55,25 @@ def make_order2lesson(course):
                 order2lesson[i] = lesson
     return order2lesson
 
+def timely_reminders(from_date, to_date, reminders):
+    if not reminders: return None
+    d = from_date
+    rems = [f"{reminders[d.isoformat()]} ({d.isoformat()})"] \
+           if d.isoformat() in reminders else []
+    d += dt.timedelta(days=1)
+    while d < to_date:
+        if d in reminders:
+            rems.append(f"{reminders[d.isoformat()]} ({d.isoformat()})")
+        d += dt.timedelta(days=1)
+    return ",".join(rems) if rems else None
+
 def main(argv):
     parser = make_argparser()
     args = parser.parse_args(argv[1:])
     first = dt.datetime.strptime(args.first, "%Y-%m-%d").date()
     last = dt.datetime.strptime(args.last, "%Y-%m-%d").date()
     breaks = json.load(open(args.breaks, 'r')) if args.breaks else None
+    reminders = json.load(open(args.reminders, 'r')) if args.reminders else None
     course = json.load(open(args.course, 'r')) if args.course else None
     order2lesson = make_order2lesson(course)
     fout = open(args.output, 'w') if args.output else sys.stdout
@@ -66,19 +81,26 @@ def main(argv):
     last_class = first
     print("Week 1", file=fout)
     week = 2
-    for class_date in class_dates(first, last, args.days):
+    class_dates = list(gen_class_dates(first, last, args.days))
+    for i, class_date in enumerate(class_dates):
         if class_date.weekday() < last_class.weekday():
             print("Week {}".format(week), file=fout)
             week += 1
+        class_date_iso = class_date.isoformat()
         last_class = class_date
-        schedule_line = [class_date.isoformat()]
+        # line is <date>;<lesson>;<materials>;<reminders>
+        line = class_date_iso
         if breaks and class_date.isoformat() in breaks:
-            schedule_line.append(
-                "{} - No Class".format(breaks[class_date.isoformat()]))
-        elif course and lesson_number in order2lesson:
-            schedule_line.append(order2lesson[lesson_number])
+            line += ";" + f"{breaks[class_date.isoformat()]} - No Class"
+        elif course and (lesson_number in order2lesson):
+            line += ";" + order2lesson[lesson_number]
             lesson_number += 1
-        print(";".join(schedule_line), file=fout)
+        next_class = class_dates[i + 1] if i + 1 < len(class_dates) else class_date
+        rems = timely_reminders(class_date, next_class, reminders)
+        if rems:
+            semicolons = len([c for c in line if c == ";"])
+            line += ";" * (3 - semicolons) + rems
+        print(line, file=fout)
 
 
 
