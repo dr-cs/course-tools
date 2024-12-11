@@ -79,10 +79,15 @@ def main(argv):
     fout = open(args.output, 'w') if args.output else sys.stdout
     lesson_number = 1
     last_class = first
+    parts = {course[part]["first"]: course[part]["title"]
+             for part in course if part[:4].lower() == "part"}
     print("Week 1", file=fout)
     week = 2
     class_dates = list(gen_class_dates(first, last, args.days))
     for i, class_date in enumerate(class_dates):
+        lesson = order2lesson[lesson_number] if course and (lesson_number in order2lesson) else None
+        if lesson in parts:
+            print(parts[lesson], file=fout)
         if class_date.weekday() < last_class.weekday():
             print("Week {}".format(week), file=fout)
             week += 1
@@ -92,7 +97,7 @@ def main(argv):
         line = class_date_iso
         if breaks and class_date.isoformat() in breaks:
             line += ";" + f"{breaks[class_date.isoformat()]} - No Class"
-        elif course and (lesson_number in order2lesson):
+        elif lesson:
             line += ";" + order2lesson[lesson_number]
             lesson_number += 1
         next_class = class_dates[i + 1] if i + 1 < len(class_dates) else class_date
@@ -101,6 +106,7 @@ def main(argv):
             semicolons = len([c for c in line if c == ";"])
             line += ";" * (3 - semicolons) + rems
         print(line, file=fout)
+    print(f"{lesson_number - 1} lectures.")
 
 
 
