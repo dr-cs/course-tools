@@ -3,22 +3,53 @@
     <title></title>
   </head>
   <body>
-    <table>
+    <h2>Important Information</h2>
+    <ul>
+        {% for item in frontmatter %}
+            <li><b>{{item[0]}}</b>: {{item[1]}}</li>
+        {% endfor %}
+    </ul>
+    <h2>Required Materials</h2>
+    <ul>
+        {% for item in required_materials %}
+            <li>{{(item|markdown).replace("<p>","").replace("</p>","")}}</li>
+        {% endfor %}
+    </ul>
+    <h2>Recommended Materials</h2>
+    <ul>
+        {% for item in recommended_materials %}
+            <li>{{(item|markdown).replace("<p>","").replace("</p>","")}}</li>
+        {% endfor %}
+    </ul>
+    <h2>Schedule</h2>
+    <table class="schedule">
       <tr>
-        <th>Date</th><th>Topics</th><th>Reading/Resources</th><th>Reminders</th>
+        <th>Date</th><th>Topics</th><th>Reading/Resources</th><th>Exercises</th><th>Assignments</th><th>Reminders</th>
       </tr>
       {% for row in table %}
       {% if "internal_header" in row %}
-      <tr><td colspan="4">{{row["internal_header"]}}</td></tr>
+      <tr><td colspan="5">{{row["internal_header"]}}</td></tr>
       {% else %}
       <tr>
-        <td>{{row["date"]}}</td>
-        <td>{{(row["topic"]|markdown).replace("<p>","").replace("</p>","")}}</td>
+        <td style="width: 10ch">{{row["date"]}}</td>
+        <td>{{(row["slides"]|markdown).replace("<p>","").replace("</p>","")}}</td>
         <td>
-          {% for item in row["materials"][:-1] %}
+          {% for item in row["reading"][:-1] %}
           {{(item|markdown).replace("<p>","").replace("</p>","")}}<br/>
           {% endfor %}
-          {{(row["materials"][-1]|markdown).replace("<p>","").replace("</p>","")}}
+          {{(row["reading"][-1]|markdown).replace("<p>","").replace("</p>","")}}
+        </td>
+        <td>
+          {% for item in row["exercises"][:-1] %}
+          {{(item|markdown).replace("<p>","").replace("</p>","")}}<br/>
+          {% endfor %}
+          {{(row["exercises"][-1]|markdown).replace("<p>","").replace("</p>","")}}
+        </td>
+        <td>
+          {% for item in row["assignments"][:-1] %}
+          {{(item|markdown).replace("<p>","").replace("</p>","")}}<br/>
+          {% endfor %}
+          {{(row["assignments"][-1]|markdown).replace("<p>","").replace("</p>","")}}
         </td>
         <td>
           {% for item in row["reminders"][:-1] %}

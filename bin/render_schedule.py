@@ -14,6 +14,8 @@ def make_argparser():
                         help="Schedule file, as produced by make_schedule.py")
     parser.add_argument("-c", "--course", dest="course", required=True,
                         help="JSON file containing course dict.")
+    parser.add_argument("-i", "--semester-info", dest="semester_info", required=True,
+                        help="JSON file containing semester information.")
     parser.add_argument("-t", "--template", dest="template_file", required=True,
                         help="Template file used for rendering schedule.")
     parser.add_argument("-o", "--output", dest="output", required=False,
@@ -39,29 +41,46 @@ def main(argv):
     args = parser.parse_args(argv[1:])
     schedule_file = open(args.schedule, 'r')
     course = json.load(open(args.course, 'r'))
+    semester_info = json.load(open(args.semester_info, 'r'))
+    lessons = {lesson["topic"]: lesson for lesson in course["lessons"]
+               if "topic" in lesson}
     rows = []
+    frontmatter = [
+        ["Meeting times", semester_info["meeting_times"]],
+        ["Room", semester_info["room"]]
+    ]
     for line in schedule_file:
         fields = [field.strip() for field in line.split(";")]
         if len(fields) == 1:
             rows.append({"internal_header": fields[0]})
-        else:
+        elif fields[1] in lessons:
+            lesson = lessons[fields[1]]
+            readings = lesson["reading"] + [f"Video: {v}" for v in lesson["videos"]]
             rows.append({"date": fields[0],
-                         "topics": (topics(fields[1], course)
-                                    if len(fields) > 1
-                                    else [""]),
-                         "materials": (materials(fields[1],
-                                                 fields[2] if len(fields) > 2 else "",
-                                                 course)
-                                       ),
-                         "reminders": (fields[3].split(",")
-                                       if len(fields) > 3
-                                       else [""])
+                         "slides": lesson["slides"],
+                         "reading": readings if readings else [""],
+                         "exercises": (lesson["exercises"]
+                                       if lesson["exercises"] else [""]),
+                         "assignments": fields[2].split(","),
+                         "reminders": fields[3].split(",")
+                         })
+        else:
+            rows.append({"date": fields[0], # date
+                         "slides": fields[1], # empty, or holiday
+                         "reading": [""],
+                         "exercises": [""],
+                         "assignments": [""],
+                         "reminders": fields[2].split(",")
                          })
     env = jinja2.Environment()
     env.filters['markdown'] = markdown.markdown
     template = env.from_string(open(args.template_file, 'r').read())
     fout = open(args.output, 'w') if args.output else sys.stdout
-    print(template.render(table=rows), file=fout)
+    print(template.render(frontmatter=frontmatter,
+                          required_materials=course["required_materials"],
+                          recommended_materials=course["recommended_materials"],
+                          table=rows),
+          file=fout)
 
 if __name__=="__main__":
     main(sys.argv)

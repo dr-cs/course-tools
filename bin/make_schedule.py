@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import collections
 import json
 import sys
 import datetime as dt
@@ -25,16 +26,12 @@ def gen_class_dates(first, last, class_days):
 
 def make_argparser():
     parser = argparse.ArgumentParser(description='Generate class schedule.')
-    parser.add_argument("-f", "--first", dest="first", required=True,
-                        help="The first class date, in ISO format")
-    parser.add_argument("-l", "--last", dest="last", required=True,
-                        help="The last class date, in ISO format")
-    parser.add_argument("-d", "--days", dest="days", required=True,
-                        help="Class days, e.g., TR for Tuesdays and Thursdays")
-    parser.add_argument("-b", "--breaks", dest="breaks", required=False,
-                        help="File containing JSON dict of breaks/holidays.")
-    parser.add_argument("-r", "--reminders", dest="reminders", required=False,
-                        help="File containing JSON dict of reminders.")
+
+    parser.add_argument("-i", "--semester-info", dest="semester_info",
+                        required=True,
+                        help=("File containing JSON dict first day, last day, "
+                             "class days, meeting days/times, breaks/holidays, "
+                              "and reminders."))
     parser.add_argument("-c", "--course", dest="course", required=False,
                         help="JSON course. If absent, generate blank schedule.")
     parser.add_argument("-o", "--output", dest="output", required=False,
@@ -56,57 +53,77 @@ def make_order2lesson(course):
     return order2lesson
 
 def timely_reminders(from_date, to_date, reminders):
-    if not reminders: return None
+    if not reminders: return ""
     d = from_date
-    rems = [f"{reminders[d.isoformat()]} ({d.isoformat()})"] \
+    rems = [f"{rem} ({d.isoformat()})" for rem in reminders[d.isoformat()].split(",")] \
            if d.isoformat() in reminders else []
     d += dt.timedelta(days=1)
     while d < to_date:
-        if d in reminders:
-            rems.append(f"{reminders[d.isoformat()]} ({d.isoformat()})")
+        if d.isoformat() in reminders:
+            for rem in reminders[d.isoformat()].split(","):
+                rems.append(f"{rem} ({d.isoformat()})")
         d += dt.timedelta(days=1)
-    return ",".join(rems) if rems else None
+    return ",".join(rems) if rems else ""
 
+def next_lesson(lesson_iter):
+    try:
+        return next(lesson_iter)
+    except StopIteration:
+        return {}
 def main(argv):
     parser = make_argparser()
     args = parser.parse_args(argv[1:])
-    first = dt.datetime.strptime(args.first, "%Y-%m-%d").date()
-    last = dt.datetime.strptime(args.last, "%Y-%m-%d").date()
-    breaks = json.load(open(args.breaks, 'r')) if args.breaks else None
-    reminders = json.load(open(args.reminders, 'r')) if args.reminders else None
+    semester_info = json.load(open(args.semester_info, 'r')) if args.course else None
     course = json.load(open(args.course, 'r')) if args.course else None
-    order2lesson = make_order2lesson(course)
     fout = open(args.output, 'w') if args.output else sys.stdout
-    lesson_number = 1
-    last_class = first
-    parts = {course[part]["first"]: course[part]["title"]
-             for part in course if part[:4].lower() == "part"}
-    print("Week 1", file=fout)
-    week = 2
-    class_dates = list(gen_class_dates(first, last, args.days))
+    first = dt.datetime.strptime(semester_info["first_day"], "%Y-%m-%d").date()
+    last = dt.datetime.strptime(semester_info["last_day"], "%Y-%m-%d").date()
+    breaks = semester_info["breaks"]
+    reminders = semester_info["reminders"]
+    # print(f"Meeting times;{semester_info['meeting_times']}", file=fout)
+    # print(f"Room;{semester_info['room']}", file=fout)
+    prev_class = first
+    week = 1
+    lesson_iter = iter(course["lessons"])
+    num_topics, included_topics = 0, 0
+    class_dates = list(gen_class_dates(first, last, semester_info["days"]))
+    is_first_day = True
+    lesson = next_lesson(lesson_iter)
+    assignments = ",".join(lesson["assignments"]) if "assignments" in lesson else ""
     for i, class_date in enumerate(class_dates):
-        lesson = order2lesson[lesson_number] if course and (lesson_number in order2lesson) else None
-        if lesson in parts:
-            print(parts[lesson], file=fout)
-        if class_date.weekday() < last_class.weekday():
-            print("Week {}".format(week), file=fout)
+        # Non-topics that "consume" the lesson.
+        if "part" in lesson:
+            print(lesson["part"], file=fout)
+            lesson = next_lesson(lesson_iter)
+        elif ("topic" in lesson) and ("include_semester" in lesson) and \
+            (lesson["include_semester"] is False):
+            lesson = next_lesson(lesson_iter)
+            num_topics += 1
+
+        if is_first_day or (class_date.weekday() < prev_class.weekday()):
+            print(f"Week {week}", file=fout)
             week += 1
-        class_date_iso = class_date.isoformat()
-        last_class = class_date
-        # line is <date>;<lesson>;<materials>;<reminders>
-        line = class_date_iso
+            is_first_day = False
+
         if breaks and class_date.isoformat() in breaks:
-            line += ";" + f"{breaks[class_date.isoformat()]} - No Class"
-        elif lesson:
-            line += ";" + order2lesson[lesson_number]
-            lesson_number += 1
+            topic =  f"{breaks[class_date.isoformat()]} - No Class"
+            assignments = ""
+        elif "topic" in lesson:
+            topic = lesson["topic"]
+            num_topics += 1
+            included_topics += 1
+            assignments = ",".join(lesson["assignments"]) if "assignments" in lesson else ""
+            lesson = next_lesson(lesson_iter)
+        else:
+            topic, assignments = "", ""
+        class_date_iso = class_date.isoformat()
+        prev_class = class_date
         next_class = class_dates[i + 1] if i + 1 < len(class_dates) else class_date
         rems = timely_reminders(class_date, next_class, reminders)
-        if rems:
-            semicolons = len([c for c in line if c == ";"])
-            line += ";" * (3 - semicolons) + rems
+        line = f"{class_date_iso};{topic};{assignments};{rems}"
         print(line, file=fout)
-    print(f"{lesson_number - 1} lectures.")
+
+    print(f"{included_topics=} out of {num_topics=} from {args.course=}.")
 
 
 

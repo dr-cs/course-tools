@@ -1,0 +1,155 @@
+---
+template: course
+title: Syllabus
+---
+
+
+<center>
+SYLLABUS
+College of Computing and Software Engineering
+Department of Computer Science
+{{course["number"]}}: {{course["title"]}}
+{{semester_info["academic_term"]}}
+<center>
+
+## Course Information
+
+Class meeting times: {{semester_info["meeting_times"]}}
+Modality: {{semester_info["modality"]}}; Location: {{semester_info["room"]}}
+Syllabus and detailed schedule is posted on course web site: {{course["url"]}}.
+
+## Instructor Information
+
+Name: Christopher Simpkins
+Email: christoper.simpkins@kennesaw.edu
+Office Location: Norton Hall Room 330
+Office phone: N/A
+Office Hours: {{semester_info["office_hours"]}}
+Preferred method of communication: E-mail
+
+## Course Description
+
+{{course["description"]}}
+
+Prerequisites:
+
+{% for item in course["prerequisites"] %}
+- {{item}}
+{% endfor %}
+
+Corequisites:
+
+{% for item in course["corequisites"] %}
+- {{item}}
+{% endfor %}
+
+## Course Materials
+
+Required Texts:
+
+{% for material in course["required_materials"] %}
+- {{material}}
+{% endfor %}
+
+Recommended Texts:
+
+{% for material in course["recommended_materials"] %}
+- {{material}}
+{% endfor %}
+
+Technology requirements:
+
+{% for requirement in course["technology_requirements"] %}
+- {{requirement}}
+{% endfor %}
+
+
+## Course Learning Outcomes
+
+{% for outcome in course["learning_outcomes"] %}
+- {{outcome}}
+{% endfor %}
+
+## Course Requirements and Assignments
+
+{% for assignment in course["assignments"] %}
+- {{assignment}}
+{% endfor %}
+
+List each assignment in as much detail as possible. Include course requirements such as participation and/or attendance.
+
+## Evaluation and Grading Policies
+
+{% for item in course["grading"] %}
+- {{item}}
+{% endfor %}
+
+Each assignment will be graded on a 100 point scale which you may consider a percentage with respect to the grading scale below.  Some assignments may have more than 100 points, in which case the points in excess of 100 are "extra credit."
+
+In general, every attempt will be made to provide grades and feedback within two weeks of submission of an assignment.  All grades to date will be posted before midterm so that students may make informed decisions bout course withdrawals, and before finals week so that students may budget their final exam study time appropriately.
+
+GRADING SCALE:
+90% - 100% A
+80% - 89% B
+70% - 79% C
+60% - 69% D
+0% - 59% F
+
+Midterm Grades: A midterm grade will be assigned by the midterm grade due date identified on the academic calendar. This midterm grade is for assessing mid-semester performance at least one week prior to the last day to withdraw without academic penalty. You may view your midterm grade in Owl Express. Note that only your final grade will be officially recorded on your academic transcript.
+
+## Course Policies
+
+### Attendance Policy
+
+Class attendance is required and very important for successful completion of the course. Students are expected to attend every class and participate in the discussion of ideas developed by others in the class. Peer feedback is essential and is part of the grade assigned to each of the course assignments stated above. Excused absences must be planned for, when possible, and justified with documentation. The student is responsible for making up missed class sessions. Late arrival that causes disruption, early departure that causes disruption, excessive conversation among students (a disruption in its own right), inappropriate use of electronic devices that cause disruptions and other actions that disrupt the classroom are unacceptable.
+
+### Email Policy
+
+Students must use their official KSU email address and put the course number, {{course_number}}, in the subject line of the email when sending email pertaining to the course.
+
+### Classroom Behavior
+
+All students are reminded to conduct themselves in accordance with the Student Code
+of Conduct, as published in the University Catalog. Every KSU student is responsible for upholding the
+provision. Students who are in violation of KSU policy will be asked to leave the classroom and may be subject
+to disciplinary action by the University.
+
+# Instructional Continuity Plan
+
+Kennesaw State University (KSU) may decide to close campuses, operate on a delayed schedule, or transition to remote instruction for inclement weather or in case of emergency.
+
+The University will announce campus closures, delayed schedules, or remote instruction through KSU Alerts sent to your cell number on file and to your university email account. In addition, announcements will be posted on KSU’s home page: www.kennesaw.edu.
+
+Our class continuity plan includes:
+
+1.	Communication:  Please check D2l Brightspace or e-mail for necessary instructions.
+2.	Virtual Classes:  If in-person classes are not possible, we may transition to virtual classes using MS Teams.
+3.	Assignments and Assessments: Deadlines for assignments and assessments may be adjusted to accommodate the emergency situation.
+
+We understand that emergencies create unique challenges.  If you need additional support during an emergency, reach out via Brightspace or e-mail.  The university also offers resources such as counseling and academic support, which can be accessed remotely.
+
+### Policy on the Usage of Artificial Intelligence
+
+AI Use Allowed, but Not Required:
+
+In this class, you are welcome to use AI for any purpose. However, you should note that all AI generative tools still tend to make up incorrect facts and fake citations, code generation models tend to produce inaccurate outputs, and image/art generation tools can produce copied work or offensive products. You will be responsible for any inaccurate, biased, offensive, or otherwise unethical content you submit regardless of whether it originally comes from you or an AI tool. If you use an AI tool, its contribution must be credited in your submission. The use of an AI tool without acknowledgement is cheating and constitutes a violation of the KSU Code of Academic Integrity.
+
+## Department or College Policies
+
+Students are expected to be aware that the Computer Science department has certain policies in place that govern practices within the department including:
+
+1. “B” or better grade is required for CS 1321/L and CSE 1322/L and their equivalent transfers. All courses used toward any undergraduate degree in the computer science must be completed with an assessed performance grade of &quot;C&quot; or better. This means that all prerequisite courses from the CS Department must have been completed with a &quot;C&quot; or better in order for a student to enter the next course in a sequence.
+
+2. All requests for course overloads must be made through the College advising office and with the approval of the Program coordinator and department chair. The instructor of any course is not permitted to authorize course overloads.
+
+3. All requests for prerequisite bypasses must be made through the College advising office and with the approval of the Program coordinator and department chair. The instructor of any course is not permitted to authorize course overwrites.
+
+4. All students are encouraged to register their current choice of major using the department major change process. Students who are not recorded under their intended major may find that they may be limited from registering for courses they require to complete their intended program of study.
+
+## Institutional Syllabus Policies, Procedures, and Resources
+
+Federal, BOR, & KSU Required Syllabus Policies and Student Resources: https://www.kennesaw.edu/curriculum-instruction-assessment/academic-program-planning-development/resources/student-syllabus-resources.php
+
+## Course Schedule
+
+See the detailed course schedule at {{course["url"]}}.
