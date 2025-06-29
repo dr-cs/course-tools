@@ -73,8 +73,11 @@ def next_lesson(lesson_iter):
 def main(argv):
     parser = make_argparser()
     args = parser.parse_args(argv[1:])
-    semester_info = json.load(open(args.semester_info, 'r')) if args.course else None
-    course = json.load(open(args.course, 'r')) if args.course else None
+    semester_info = json.load(open(args.semester_info, "r")) if args.course else None
+    course = json.load(open(args.course, "r")) if args.course else None
+    lessons = course["lessons"] \
+        if isinstance(course["lessons"], list) \
+        else json.load(open(course["lessons"], "r"))
     fout = open(args.output, 'w') if args.output else sys.stdout
     first = dt.datetime.strptime(semester_info["first_day"], "%Y-%m-%d").date()
     last = dt.datetime.strptime(semester_info["last_day"], "%Y-%m-%d").date()
@@ -84,7 +87,7 @@ def main(argv):
     # print(f"Room;{semester_info['room']}", file=fout)
     prev_class = first
     week = 1
-    lesson_iter = iter(course["lessons"])
+    lesson_iter = iter(lessons)
     num_topics, included_topics = 0, 0
     class_dates = list(gen_class_dates(first, last, semester_info["days"]))
     is_first_day = True
@@ -122,7 +125,9 @@ def main(argv):
         rems = timely_reminders(class_date, next_class, reminders)
         line = f"{class_date_iso};{topic};{assignments};{rems}"
         print(line, file=fout)
-
+    for date, time in semester_info["final_exam"].items():
+        line = f"{date};Final Exam;{time};"
+        print(line, file=fout)
     print(f"{included_topics=} out of {num_topics=} from {args.course=}.")
 
 

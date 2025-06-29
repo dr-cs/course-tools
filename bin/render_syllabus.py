@@ -23,7 +23,10 @@ def make_argparser():
     return parser
 
 def mk_schedule(schedule_file: str, course: dict) -> list[list[str]]:
-    lessons = {lesson["topic"]: lesson for lesson in course["lessons"]
+    all_lessons = course["lessons"] \
+        if isinstance(course["lessons"], list) \
+        else json.load(open(course["lessons"], "r"))
+    lessons = {lesson["topic"]: lesson for lesson in all_lessons
                if "topic" in lesson}
     schedule = [
         ["Week", "Content Covered", "Assignments", "Exams"]
@@ -44,7 +47,9 @@ def mk_schedule(schedule_file: str, course: dict) -> list[list[str]]:
                 prev_week = [f"{fields[0][:-1]}: ","","",""]
             elif len(fields) == 4:
                 prev_week[0] += fields[0][5:] + ","
-                if fields[1] in lessons:
+                if "exam" in fields[1].lower() and fields[1] not in lessons:
+                    prev_week[3] += fields[1]
+                elif fields[1] in lessons:
                     content: str = markdown.markdown(lessons[fields[1]]["slides"])
                     content = re.sub('<[^<]+?>', '', content)
                     if "exam" in content.lower() and "review" not in content.lower():

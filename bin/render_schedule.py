@@ -42,7 +42,10 @@ def main(argv):
     schedule_file = open(args.schedule, 'r')
     course = json.load(open(args.course, 'r'))
     semester_info = json.load(open(args.semester_info, 'r'))
-    lessons = {lesson["topic"]: lesson for lesson in course["lessons"]
+    all_lessons = course["lessons"] \
+        if isinstance(course["lessons"], list) \
+        else json.load(open(course["lessons"], "r"))
+    lessons = {lesson["topic"]: lesson for lesson in all_lessons
                if "topic" in lesson}
     rows = []
     frontmatter = [
