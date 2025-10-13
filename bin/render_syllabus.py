@@ -52,23 +52,26 @@ def mk_schedule(schedule_file: str, course: dict) -> list[list[str]]:
                 elif fields[1] in lessons:
                     content: str = markdown.markdown(lessons[fields[1]]["slides"])
                     content = re.sub('<[^<]+?>', '', content)
-                    if "exam" in content.lower() and "review" not in content.lower():
+                    if "exam" in content.lower() and \
+                       "review" not in content.lower():
                         prev_week[3] = content
                     elif content not in prev_week[1]:
                         prev_week[1] += content +","
                 elif fields[1] not in prev_week[1]:
                     prev_week[1] += fields[1] + ","
                 if fields[2]:
-                    assignments: str = markdown.markdown(fields[2])
+                    assfield = fields[2].split(",")
+                    due = [a for a in assfield if
+                           a.lower().strip().startswith("due:")]
+                    due = ",".join(due)
+                    assignments: str = markdown.markdown(due)
                     assignments = re.sub('<[^<]+?>', '', assignments)
                     prev_week[2] += assignments + ","
         prev_week = [s[:-1] if (s and s[-1] == ",") else s for s in prev_week]
         schedule.append(prev_week)
     return schedule
 
-def main(argv):
-    parser = make_argparser()
-    args = parser.parse_args(argv[1:])
+def main(args):
     course = json.load(open(args.course, 'r'))
     semester_info = json.load(open(args.semester_info, 'r'))
     schedule = mk_schedule(args.schedule, course)
@@ -82,4 +85,6 @@ def main(argv):
           file=fout)
 
 if __name__=="__main__":
-    main(sys.argv)
+    parser = make_argparser()
+    args = parser.parse_args(sys.argv[1:])
+    main(args)

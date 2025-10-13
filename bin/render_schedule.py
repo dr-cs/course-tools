@@ -36,9 +36,7 @@ def materials(topics, materials, course):
                                [])
     return (lecture_materials + [item for item in materials_items])
 
-def main(argv):
-    parser = make_argparser()
-    args = parser.parse_args(argv[1:])
+def main(args):
     schedule_file = open(args.schedule, 'r')
     course = json.load(open(args.course, 'r'))
     semester_info = json.load(open(args.semester_info, 'r'))
@@ -86,4 +84,6 @@ def main(argv):
           file=fout)
 
 if __name__=="__main__":
-    main(sys.argv)
+    parser = make_argparser()
+    args = parser.parse_args(sys.argv[1:])
+    main(args)

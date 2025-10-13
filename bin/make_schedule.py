@@ -38,20 +38,6 @@ def make_argparser():
                         help="File to write schedule to.")
     return parser
 
-
-def make_order2lesson(course):
-    if not course:
-        return None
-    # make a dict mapping lesson order to lesson key in course
-    order2lesson = {}
-    for lesson in course.keys():
-        if "order" in course[lesson]:
-            # lesson is a list of ints - map each one to lesson
-            # represents lessons that span multiple class days
-            for i in course[lesson]["order"]:
-                order2lesson[i] = lesson
-    return order2lesson
-
 def timely_reminders(from_date, to_date, reminders):
     if not reminders: return ""
     d = from_date
@@ -70,6 +56,12 @@ def next_lesson(lesson_iter):
         return next(lesson_iter)
     except StopIteration:
         return {}
+
+def next_included_lesson(lesson, lesson_iter):
+    while ("include_semester" in lesson) and lesson["include_semester"] is False:
+        lesson = next(lesson_iter)
+    return lesson
+
 def main(argv):
     parser = make_argparser()
     args = parser.parse_args(argv[1:])
@@ -98,10 +90,6 @@ def main(argv):
         if "part" in lesson:
             print(lesson["part"], file=fout)
             lesson = next_lesson(lesson_iter)
-        elif ("topic" in lesson) and ("include_semester" in lesson) and \
-            (lesson["include_semester"] is False):
-            lesson = next_lesson(lesson_iter)
-            num_topics += 1
 
         if is_first_day or (class_date.weekday() < prev_class.weekday()):
             print(f"Week {week}", file=fout)
@@ -111,7 +99,8 @@ def main(argv):
         if breaks and class_date.isoformat() in breaks:
             topic =  f"{breaks[class_date.isoformat()]} - No Class"
             assignments = ""
-        elif "topic" in lesson:
+        elif ("topic" in lesson):
+            lesson = next_included_lesson(lesson, lesson_iter)
             topic = lesson["topic"]
             num_topics += 1
             included_topics += 1
@@ -125,6 +114,7 @@ def main(argv):
         rems = timely_reminders(class_date, next_class, reminders)
         line = f"{class_date_iso};{topic};{assignments};{rems}"
         print(line, file=fout)
+
     for date, time in semester_info["final_exam"].items():
         line = f"{date};Final Exam;{time};"
         print(line, file=fout)
