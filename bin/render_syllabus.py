@@ -49,9 +49,11 @@ def mk_schedule(schedule_file: str, course: dict) -> list[list[str]]:
                 prev_week[0] += fields[0][5:] + ","
                 if "exam" in fields[1].lower() and fields[1] not in lessons:
                     prev_week[3] += fields[1]
-                elif fields[1] in lessons:
-                    content: str = markdown.markdown(lessons[fields[1]]["slides"])
-                    content = re.sub('<[^<]+?>', '', content)
+                elif fields[1].split(",")[0] in lessons:
+                    slides = [lessons[less]["slides"] for less in fields[1].split(",")]
+                    contents: str = [markdown.markdown(s) for s in slides]
+                    contents = [re.sub('<[^<]+?>', '', c) for c in contents]
+                    content = ",".join(contents)
                     if "exam" in content.lower() and \
                        "review" not in content.lower():
                         prev_week[3] = content

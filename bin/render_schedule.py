@@ -54,24 +54,30 @@ def main(args):
         fields = [field.strip() for field in line.split(";")]
         if len(fields) == 1:
             rows.append({"internal_header": fields[0]})
-        elif fields[1] in lessons:
-            lesson = lessons[fields[1]]
-            readings = lesson["reading"] + [f"Video: {v}" for v in lesson["videos"]]
+        elif fields[1].split(",")[0] in lessons:
+            # We have a (list of) lesson(s)
+            slides = [lessons[lesson]["slides"]
+                      for lesson in fields[1].split(",")]
+            readings = [lessons[lesson]["reading"] +
+                        [f"Video: {v}" for v in lessons[lesson]["videos"]]
+                        for lesson in fields[1].split(",")]
+            readings = reduce(lambda a, b: a + b, readings)
+            exercises = [lessons[lesson]["exercises"] for lesson in fields[1].split(",")]
+            exercises = reduce(lambda a, b: a + b, exercises)
             rows.append({"date": fields[0],
-                         "slides": lesson["slides"],
+                         "slides": slides,
                          "reading": readings if readings else [""],
-                         "exercises": (lesson["exercises"]
-                                       if lesson["exercises"] else [""]),
+                         "exercises": exercises if exercises else [""],
                          "assignments": fields[2].split(","),
                          "reminders": fields[3].split(",")
                          })
         else:
             rows.append({"date": fields[0], # date
-                         "slides": fields[1], # empty, or holiday
+                         "slides": [fields[1]], # empty, or holiday
                          "reading": [""],
                          "exercises": [""],
                          "assignments": [""],
-                         "reminders": fields[2].split(",")
+                         "reminders": fields[3].split(",")
                          })
     env = jinja2.Environment()
     env.filters['markdown'] = markdown.markdown

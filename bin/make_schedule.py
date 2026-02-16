@@ -62,6 +62,10 @@ def next_included_lesson(lesson, lesson_iter):
         lesson = next(lesson_iter)
     return lesson
 
+def is_included(lesson):
+    return ("include_semester" not in lesson) or \
+        (lesson["include_semester"] is True)
+
 def main(argv):
     parser = make_argparser()
     args = parser.parse_args(argv[1:])
@@ -70,6 +74,8 @@ def main(argv):
     lessons = course["lessons"] \
         if isinstance(course["lessons"], list) \
         else json.load(open(course["lessons"], "r"))
+    lessons = [lesson for lesson in lessons if is_included(lesson)]
+    num_topics = sum([1 for lesson in lessons if "topic" in lesson])
     fout = open(args.output, 'w') if args.output else sys.stdout
     first = dt.datetime.strptime(semester_info["first_day"], "%Y-%m-%d").date()
     last = dt.datetime.strptime(semester_info["last_day"], "%Y-%m-%d").date()
@@ -80,7 +86,7 @@ def main(argv):
     prev_class = first
     week = 1
     lesson_iter = iter(lessons)
-    num_topics, included_topics = 0, 0
+    included_topics = 0
     class_dates = list(gen_class_dates(first, last, semester_info["days"]))
     is_first_day = True
     lesson = next_lesson(lesson_iter)
@@ -100,9 +106,7 @@ def main(argv):
             topic =  f"{breaks[class_date.isoformat()]} - No Class"
             assignments = ""
         elif ("topic" in lesson):
-            lesson = next_included_lesson(lesson, lesson_iter)
             topic = lesson["topic"]
-            num_topics += 1
             included_topics += 1
             assignments = ",".join(lesson["assignments"]) if "assignments" in lesson else ""
             lesson = next_lesson(lesson_iter)
@@ -116,7 +120,7 @@ def main(argv):
         print(line, file=fout)
 
     for date, time in semester_info["final_exam"].items():
-        line = f"{date};Final Exam;{time};"
+        line = f"{date};Final Exam;;{time}"
         print(line, file=fout)
     print(f"{included_topics=} out of {num_topics=} from {args.course=}.")
 
