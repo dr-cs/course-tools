@@ -73,21 +73,24 @@ def main(args):
                          })
         else:
             rows.append({"date": fields[0], # date
-                         "slides": [fields[1]], # empty, or holiday
+                         "slides": fields[1].split(","), # empty, or holiday
                          "reading": [""],
                          "exercises": [""],
-                         "assignments": [""],
+                         "assignments": fields[2].split(","),
                          "reminders": fields[3].split(",")
                          })
     env = jinja2.Environment()
     env.filters['markdown'] = markdown.markdown
     template = env.from_string(open(args.template_file, 'r').read())
     fout = open(args.output, 'w') if args.output else sys.stdout
-    print(template.render(frontmatter=frontmatter,
-                          required_materials=course["required_materials"],
-                          recommended_materials=course["recommended_materials"],
-                          table=rows),
-          file=fout)
+    print(template.render(
+        course=course,
+        semester_info=semester_info,
+        frontmatter=frontmatter,
+        required_materials=course["required_materials"],
+        recommended_materials=course["recommended_materials"],
+        table=rows),
+        file=fout)
 
 if __name__=="__main__":
     parser = make_argparser()
