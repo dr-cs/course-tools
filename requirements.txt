@@ -1,2 +1,9 @@
 markdown
 jinja2
+python-lsp-server[all]
+pylsp-mypy
+python-lsp-isort
+python-lsp-black
+pyls-memestra
+pylsp-rope
+python-lsp-ruff
