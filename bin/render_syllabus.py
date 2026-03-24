@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
 import argparse
-import sys
 import json
-import jinja2
-from pprint import pprint
-import markdown
 import re
+import sys
+
+import jinja2
+import markdown
+
 
 def make_argparser():
     parser = argparse.ArgumentParser(description='Generate class schedule.')
@@ -51,7 +52,7 @@ def mk_schedule(schedule_file: str, course: dict) -> list[list[str]]:
                     prev_week[3] += fields[1]
                 elif fields[1].split(",")[0] in lessons:
                     slides = [lessons[less]["slides"] for less in fields[1].split(",")]
-                    contents: str = [markdown.markdown(s) for s in slides]
+                    contents: list[str] = [markdown.markdown(s) for s in slides]
                     contents = [re.sub('<[^<]+?>', '', c) for c in contents]
                     content = ",".join(contents)
                     if "exam" in content.lower() and \
@@ -63,9 +64,9 @@ def mk_schedule(schedule_file: str, course: dict) -> list[list[str]]:
                     prev_week[1] += fields[1] + ","
                 if fields[2]:
                     assfield = fields[2].split(",")
-                    due = [a for a in assfield if
+                    dues = [a for a in assfield if
                            a.lower().strip().startswith("due:")]
-                    due = ",".join(due)
+                    due = ",".join(dues)
                     assignments: str = markdown.markdown(due)
                     assignments = re.sub('<[^<]+?>', '', assignments)
                     prev_week[2] += assignments + ","
@@ -76,6 +77,7 @@ def mk_schedule(schedule_file: str, course: dict) -> list[list[str]]:
 def main(args):
     course = json.load(open(args.course, 'r'))
     semester_info = json.load(open(args.semester_info, 'r'))
+    semester_info["term"] = semester_info["academic_term"].replace(" ", "").lower()
     schedule = mk_schedule(args.schedule, course)
     env = jinja2.Environment()
     env.filters['markdown'] = markdown.markdown
